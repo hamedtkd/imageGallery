@@ -1,4 +1,5 @@
 import Gallery from '@/components/Gallery'
+import InfinityScroll from '@/components/InfintiyScroll'
 import Image from 'next/image'
 
 export default function Home() {

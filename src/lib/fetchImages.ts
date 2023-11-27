@@ -2,6 +2,7 @@ import { ImagesSchemaWithPhotos, type ImagesResults } from "@/models/Images";
 import env from "./env";
 
 export default async function fetchImages(url: string): Promise<ImagesResults | undefined> {
+ 
   try {
     const res = await fetch(url, {
       headers: {

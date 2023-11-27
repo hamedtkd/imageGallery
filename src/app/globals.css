@@ -15,6 +15,7 @@
   --gray-800: #3B3D41;
   --gray-900: #1E1F21;
   --gray-950: #19191B;
+  color:var(--gray-950);
 
 }
 

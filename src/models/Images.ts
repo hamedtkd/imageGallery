@@ -10,6 +10,7 @@ const BasicImageSchema = z.object({
 
 const PhotoSchema = z.object({
   id: z.number(),
+  photographer:z.string(),
   width: z.number(),
   height: z.number(),
   url: z.string(),

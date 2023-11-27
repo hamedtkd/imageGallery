@@ -1,50 +1,75 @@
-// "use client";
+"use client";
 
 import fetchImages from "@/lib/fetchImages";
 import type { ImagesResults } from "@/models/Images";
 import Image from "next/image";
 import ImageContainer from "./ImageContainer";
-import addBlurredDateUrls from "@/lib/getBase64";
-// import { useEffect, useState } from "react";
+// import addBlurredDateUrls from "@/lib/getBase64";
+import React from "react";
+import { useInView } from "react-intersection-observer";
+import { useEffect, useState } from "react";
 
 type Props = {
   topic?: string | undefined;
   page?: string | undefined;
 };
 
-export default async function Gallery({ topic = "curated", page }: Props) {
-  // const url = !topic?`https://api.pexels.com/v1/curated`:`https://api.pexels.com/v1/search?query=${topic}`;
-  let url;
-  if (topic === "curated" && page) {
-    // browsing beyond home
-    url = `https://api.pexels.com/v1/curated?page=${page}`;
-  } else if (topic === "curated") {
-    // home
-    url = `https://api.pexels.com/v1/curated`;
-  } else if (!page) {
-    // first page of search result
-    url = `https://api.pexels.com/v1/search?query=${topic}`;
-  } else {
-    // search result beyond first page
-    url = `https://api.pexels.com/v1/search?query=${topic}&page=${page}`;
-  }
+export default  function InfinityScroll({ topic = "curated", page }: Props) {
+    console.log("object")
+  const { ref, inView, entry } = useInView({
+    /* Optional options */
+    threshold: 0,
+  });
 
-  const images: ImagesResults | undefined = await fetchImages(url);
- 
-  if (!images || images.per_page === 0){
+  const url = !topic?`https://api.pexels.com/v1/curated`:`https://api.pexels.com/v1/search?query=${topic}`;
+//   let url;
+//   if (topic === "curated" && page) {
+//     // browsing beyond home
+//     url = `https://api.pexels.com/v1/curated?page=${page}`;
+//   } else if (topic === "curated") {
+//     // home
+//     url = `https://api.pexels.com/v1/curated`;
+//   } else if (!page) {
+//     // first page of search result
+//     url = `https://api.pexels.com/v1/search?query=${topic}`;
+//   } else {
+//     // search result beyond first page
+//     url = `https://api.pexels.com/v1/search?query=${topic}&page=${page}`;
+
+const [data, setData] = useState<any>();
+
+useEffect(() => {
+    const fetchData =async ()=>{
+        const images: ImagesResults | undefined = await fetchImages(url);
+        setData(images)
+    }
+    fetchData()
     
-    return <h2 className="m-4 text-2xl font-bold text-gray-950">No Images Found</h2>;
-  }
+}, []);
   
-  const photosWithBlur = await addBlurredDateUrls(images);
+
+  if (!data || data.per_page === 0)
+    return <h2 className="m-4 text-2xl font-bold">No Images Found</h2>;
+
+  const photosWithBlur = data;
+
 
   // calculate pagination
 
   return (
     <>
       <section className="px-1 my-3 grid gap-x-1 grid-cols-gallery auto-rows-[10px]">
-        {photosWithBlur.map((photo, index) => (
-            <ImageContainer key={photo.id} photo={photo} />
+        {photosWithBlur.map((photo:any, index:any) => (
+          <React.Fragment key={photo.id}>
+            {index === photosWithBlur.length ? (
+              <ImageContainer photo={photo} />
+            ) : (
+              <div ref={ref}>
+ 
+              <ImageContainer  photo={photo} />
+              </div>
+            )}
+          </React.Fragment>
         ))}
       </section>
       {/* Add footer */}
