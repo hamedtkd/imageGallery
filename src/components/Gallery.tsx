@@ -5,6 +5,9 @@ import type { ImagesResults } from "@/models/Images";
 import Image from "next/image";
 import ImageContainer from "./ImageContainer";
 import addBlurredDateUrls from "@/lib/getBase64";
+import Pagination from "./Pagination";
+import { useRouter } from "next/router";
+import useQueryString from "@/hook/useQueryString";
 // import { useEffect, useState } from "react";
 
 type Props = {
@@ -30,23 +33,27 @@ export default async function Gallery({ topic = "curated", page }: Props) {
   }
 
   const images: ImagesResults | undefined = await fetchImages(url);
- 
-  if (!images || images.per_page === 0){
-    
-    return <h2 className="m-4 text-2xl font-bold text-gray-950">No Images Found</h2>;
-  }
-  
-  const photosWithBlur = await addBlurredDateUrls(images);
 
-  // calculate pagination
+  if (!images || images.per_page === 0) {
+    return (
+      <h2 className="m-4 text-2xl font-bold text-gray-950">No Images Found</h2>
+    );
+  }
+
+  const photosWithBlur = await addBlurredDateUrls(images);
 
   return (
     <>
       <section className="px-1 my-3 grid gap-x-1 grid-cols-gallery auto-rows-[10px]">
         {photosWithBlur.map((photo, index) => (
-            <ImageContainer key={photo.id} photo={photo} />
+          <ImageContainer key={photo.id} photo={photo} />
         ))}
       </section>
+      <Pagination
+        itemsPerPage={images.per_page}
+        totalItems={images.total_results}
+        // onPageChange={() => console.log("object")}
+      />
       {/* Add footer */}
     </>
   );

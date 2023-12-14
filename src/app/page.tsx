@@ -1,11 +1,11 @@
-import Gallery from '@/components/Gallery'
-import InfinityScroll from '@/components/InfintiyScroll'
-import Image from 'next/image'
+import Gallery from "@/components/Gallery";
 
-export default function Home() {
+export default function Home({ searchParams }: any) {
+  const { page } = searchParams;
+
   return (
     <div>
-  <Gallery/>
+      <Gallery page={page} />;
     </div>
-  )
+  );
 }
